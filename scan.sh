@@ -151,7 +151,7 @@ generate_report() {
     mkdir -p reports
     filename=$(echo "${TARGET}" | sed 's/[^a-zA-Z0-9]/_/g')
 
-    file="reports/${filename}_$(date +%Y-%m-%d-%H-%M).pdf"
+    file="reports/report.pdf"
     curl -sk -X GET "${BASE_URL}${pdf_download_link}" \
         -H "X-Auth: ${AUTH_TOKEN}" \
         -H "Cookie: ui_session=${AUTH_TOKEN}" \
