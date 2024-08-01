@@ -17,7 +17,7 @@ get_auth_token() {
     AUTH_TOKEN=$(curl -sk -D - -X POST "${BASE_URL}/api/v1/me/login" \
         -H "Content-Type: application/json" \
         -d '{"email": "'"${AUTH_USERNAME}"'", "password": "'"${AUTH_PASSWORD}"'", "remember_me": true}' \
-        | grep -oP '(?<=X-Auth: )[^\r\n]+')
+        | grep 'X-Auth:' | awk '{print $2}' | tr -d '\r')
     if [ -z "${AUTH_TOKEN}" ]; then
         echo "Unable to retrieve auth token. Check credentials."
         exit 1
