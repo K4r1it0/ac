@@ -30,7 +30,7 @@ get_profile_id() {
         FULL)
             PROFILE_ID="11111111-1111-1111-1111-111111111111"
             ;;
-        HIGH)
+        CRITICAL-HIGH)
             PROFILE_ID="11111111-1111-1111-1111-111111111112"
             ;;
         CRITICAL-HIGH-MEDIUM)
