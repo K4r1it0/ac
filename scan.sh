@@ -1,15 +1,10 @@
 #!/bin/bash
 
-# Variables
 PORT=13443
 AUTH_USERNAME="admin@admin.com"
 AUTH_PASSWORD="3b612c75a7b5048a435fb6ec81e52ff92d6d795a8b5a9c17070f6a63c97a53b2"
 TARGET=$1
-PROFILE_ID="11111111-1111-1111-1111-111111111112"
-#1111111-1111-1111-1111-111111111112  Full 
-#11111111-1111-1111-1111-111111111112 Critical-High
-#11111111-1111-1111-1111-111111111119 Critical-High-Medium
-#11111111-1111-1111-1111-111111111116 XSS
+PROFILE_SHORT_NAME=$2
 REPORT_TEMPLATE_ID="11111111-1111-1111-1111-111111111111"
 INCREMENTAL=false
 BASE_URL="https://127.0.0.1:${PORT}"
@@ -27,6 +22,28 @@ get_auth_token() {
         exit 1
     fi
     echo "Auth token retrieved: ${AUTH_TOKEN}"
+}
+
+# Function to map profile short name to profile ID
+get_profile_id() {
+    case "$PROFILE_SHORT_NAME" in
+        FULL)
+            PROFILE_ID="11111111-1111-1111-1111-111111111111"
+            ;;
+        HIGH)
+            PROFILE_ID="11111111-1111-1111-1111-111111111112"
+            ;;
+        CRITICAL-HIGH-MEDIUM)
+            PROFILE_ID="11111111-1111-1111-1111-111111111119"
+            ;;
+        XSS)
+            PROFILE_ID="11111111-1111-1111-1111-111111111116"
+            ;;
+        *)
+            echo "Invalid profile short name. Use FULL, HIGH, CRITICAL-HIGH-MEDIUM, or XSS."
+            exit 1
+            ;;
+    esac
 }
 
 # Function to add target
@@ -110,15 +127,12 @@ get_vulnerabilities() {
 # Function to generate report
 generate_report() {
     REPORT_PAYLOAD='{
-        "template_id": "11111111-1111-1111-1111-111111111111",
+        "template_id": "'"${REPORT_TEMPLATE_ID}"'",
         "source": {
             "list_type": "scans",
             "id_list": ["'"${SCAN_ID}"'"]
         }
     }'
-
-    # Print the curl command for debugging
-    echo "curl -sk -X POST \"${BASE_URL}/api/v1/reports\" -H \"X-Auth: ${AUTH_TOKEN}\" -H \"Cookie: ui_session=${AUTH_TOKEN}\" -H \"Content-Type: application/json\" -d '${REPORT_PAYLOAD}'"
 
     response=$(curl -sk -X POST "${BASE_URL}/api/v1/reports" \
         -H "X-Auth: ${AUTH_TOKEN}" \
@@ -165,6 +179,7 @@ generate_report() {
 
 # Main Execution
 get_auth_token
+get_profile_id
 add_target
 start_scan
 check_scan_status
