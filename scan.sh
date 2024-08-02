@@ -9,7 +9,7 @@ REPORT_TEMPLATE_ID="11111111-1111-1111-1111-111111111111"
 INCREMENTAL=false
 BASE_URL="https://127.0.0.1:${PORT}"
 AUTH_TOKEN=""
-CRITICAL_VULN_FOUND=0
+VULN_FOUND=0
 
 # Function to get Auth Token
 get_auth_token() {
@@ -120,7 +120,7 @@ get_vulnerabilities() {
     
     # Check for any vulnerabilities
     if [ "$(echo "${VULNERABILITIES}" | jq -r '. | length')" -gt 0 ]; then
-        CRITICAL_VULN_FOUND=1
+        VULN_FOUND=1
     fi
 }
 
@@ -187,7 +187,7 @@ get_vulnerabilities
 generate_report
 
 # Exit with appropriate status
-if [ ${CRITICAL_VULN_FOUND} -eq 1 ]; then
+if [ ${VULN_FOUND} -eq 1 ]; then
     echo "Vulnerabilities found. Failing the job."
     exit 1
 else
